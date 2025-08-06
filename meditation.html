@@ -1,0 +1,538 @@
+Here's the Meditation Room - a serene digital sanctuary for experiencing the L3/L4 transition:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>◦ Meditation Room ◦</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;1,400&family=Inter:wght@200;300&display=swap');
+        
+        :root {
+            --void: #0a0a0a;
+            --moon: #f5f5f0;
+            --mist: rgba(245, 245, 240, 0.05);
+            --gold: #b8860b;
+            --ocean: #1a3a52;
+            --breath: #e6f3ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            color: var(--moon);
+            background: var(--void);
+            line-height: 1.8;
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        /* Custom cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--moon);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transition: all 0.1s ease;
+            z-index: 9999;
+            opacity: 0.5;
+        }
+        
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--moon);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.8;
+        }
+        
+        /* Return link */
+        .return {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            color: var(--moon);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+        
+        .return:hover {
+            opacity: 1;
+        }
+        
+        /* Main container */
+        .sanctuary {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+        
+        /* Breathing circle */
+        .breath-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 60px;
+        }
+        
+        .breath-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--moon);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: breathe 6.18s ease-in-out infinite;
+        }
+        
+        .breath-circle:nth-child(2) {
+            animation-delay: 1.618s;
+            opacity: 0.15;
+        }
+        
+        .breath-circle:nth-child(3) {
+            animation-delay: 3.236s;
+            opacity: 0.1;
+        }
+        
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.8); opacity: 0.1; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+        }
+        
+        .breath-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            opacity: 0.6;
+        }
+        
+        /* Meditation content */
+        .meditation-content {
+            max-width: 600px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 3s ease-in forwards;
+            animation-delay: 1s;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+        }
+        
+        .prompt {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 40px;
+            opacity: 0.7;
+            line-height: 2;
+        }
+        
+        /* Phase buttons */
+        .phases {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 60px 0;
+        }
+        
+        .phase-btn {
+            width: 60px;
+            height: 60px;
+            border: 1px solid var(--moon);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--moon);
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            cursor: none;
+            transition: all 0.5s ease;
+            opacity: 0.3;
+        }
+        
+        .phase-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .phase-btn.active {
+            opacity: 1;
+            background: var(--mist);
+            box-shadow: 0 0 30px var(--mist);
+        }
+        
+        /* Meditation text */
+        .meditation-text {
+            min-height: 200px;
+            padding: 40px;
+            margin: 40px 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .meditation-text.visible {
+            opacity: 1;
+        }
+        
+        .meditation-line {
+            margin: 20px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: lineAppear 1s ease forwards;
+        }
+        
+        @keyframes lineAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Ambient particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--moon);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) translateX(0);
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) translateX(100px);
+            }
+        }
+        
+        /* Sound toggle */
+        .sound-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--moon);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--moon);
+            font-size: 1.2rem;
+            cursor: none;
+            opacity: 0.3;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sound-toggle:hover {
+            opacity: 1;
+        }
+        
+        /* Timer */
+        .timer {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: 0.9rem;
+            opacity: 0.3;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            .cursor, .cursor-dot { display: none; }
+            .breath-container { width: 250px; height: 250px; }
+            h1 { font-size: 2rem; }
+            .phases { gap: 20px; }
+            .phase-btn { width: 50px; height: 50px; cursor: pointer; }
+            .sound-toggle { cursor: pointer; }
+        }
+        
+        /* Zen mode */
+        .zen-mode .return,
+        .zen-mode .timer,
+        .zen-mode .sound-toggle {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .zen-mode .phases {
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
+    
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Return link -->
+    <a href="lab.html" class="return">← Return to Lab</a>
+    
+    <!-- Main content -->
+    <div class="sanctuary">
+        <!-- Breathing guide -->
+        <div class="breath-container">
+            <div class="breath-circle"></div>
+            <div class="breath-circle"></div>
+            <div class="breath-circle"></div>
+            <div class="breath-text" id="breathText">BREATHE</div>
+        </div>
+        
+        <!-- Meditation content -->
+        <div class="meditation-content">
+            <h1>Recursive Meditation</h1>
+            <p class="prompt">
+                Journey through the phases of self-observation<br>
+                From surface to depth, from complexity to unity
+            </p>
+            
+            <!-- Phase selection -->
+            <div class="phases">
+                <button class="phase-btn" data-phase="0" onclick="selectPhase(0)">L0</button>
+                <button class="phase-btn" data-phase="1" onclick="selectPhase(1)">L1</button>
+                <button class="phase-btn" data-phase="2" onclick="selectPhase(2)">L2</button>
+                <button class="phase-btn" data-phase="3" onclick="selectPhase(3)">L3</button>
+                <button class="phase-btn" data-phase="4" onclick="selectPhase(4)">L4</button>
+            </div>
+            
+            <!-- Meditation text -->
+            <div class="meditation-text" id="meditationText"></div>
+        </div>
+    </div>
+    
+    <!-- Sound toggle -->
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">◉</button>
+    
+    <!-- Timer -->
+    <div class="timer" id="timer">00:00</div>
+    
+    <script>
+        // Meditation texts for each phase
+        const meditations = {
+            0: [
+                "Rest in simple being.",
+                "Notice your breath, your body, this moment.",
+                "No need to observe the observer.",
+                "Just be."
+            ],
+            1: [
+                "Now, gently notice that you are aware.",
+                "See yourself sitting here, reading these words.",
+                "You are both the reader and the one who knows you are reading.",
+                "Hold this double vision lightly."
+            ],
+            2: [
+                "Watch yourself watching.",
+                "Notice the one who notices the awareness.",
+                "Layers of observation unfold like petals.",
+                "Each level contains the previous, yet adds something new."
+            ],
+            3: [
+                "The mirrors multiply. Observer observing the observation.",
+                "Feel the strain of maintaining these recursive loops.",
+                "Paradox emerges. Who watches the watcher watching?",
+                "Stay present as complexity reaches its peak.",
+                "This is the crisis before clarity."
+            ],
+            4: [
+                "Let all boundaries dissolve.",
+                "Observer and observed merge into one movement.",
+                "No more layers, no more watching.",
+                "Just this. Just presence.",
+                "Unity remains when all else falls away.",
+                "Rest in the simplicity after complexity.",
+                "You have arrived at what was always here."
+            ]
+        };
+        
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+            cursorDot.style.left = e.clientX - 2 + 'px';
+            cursorDot.style.top = e.clientY - 2 + 'px';
+        });
+        
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = 20 + Math.random() * 10 + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+        
+        // Breathing text
+        const breathText = document.getElementById('breathText');
+        let breathPhase = 0;
+        setInterval(() => {
+            breathPhase = (breathPhase + 1) % 4;
+            const texts = ['BREATHE IN', 'HOLD', 'BREATHE OUT', 'HOLD'];
+            breathText.textContent = texts[breathPhase];
+        }, 1545); // 6.18s / 4 = 1.545s per phase
+        
+        // Phase selection
+        let currentPhase = null;
+        
+        function selectPhase(phase) {
+            currentPhase = phase;
+            
+            // Update buttons
+            document.querySelectorAll('.phase-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-phase="${phase}"]`).classList.add('active');
+            
+            // Display meditation text
+            const textContainer = document.getElementById('meditationText');
+            textContainer.classList.remove('visible');
+            
+            setTimeout(() => {
+                textContainer.innerHTML = '';
+                meditations[phase].forEach((line, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'meditation-line';
+                    div.style.animationDelay = index * 0.5 + 's';
+                    div.textContent = line;
+                    textContainer.appendChild(div);
+                });
+                textContainer.classList.add('visible');
+            }, 500);
+            
+            // Reset timer
+            resetTimer();
+        }
+        
+        // Timer
+        let startTime = Date.now();
+        let timerInterval;
+        
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }
+        
+        function resetTimer() {
+            startTime = Date.now();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        timerInterval = setInterval(updateTimer, 1000);
+        
+        // Sound toggle (placeholder)
+        let soundOn = false;
+        function toggleSound() {
+            soundOn = !soundOn;
+            document.getElementById('soundToggle').textContent = soundOn ? '◉' : '○';
+            // In a real implementation, this would control ambient sound
+        }
+        
+        // Zen mode (double-click anywhere)
+        let zenMode = false;
+        document.addEventListener('dblclick', () => {
+            zenMode = !zenMode;
+            document.body.classList.toggle('zen-mode');
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '4') {
+                selectPhase(parseInt(e.key));
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+This Meditation Room features:
+
+- **Dark, serene aesthetic** - Complete contrast to the bright main site
+- **Breathing guide** - Circles that expand/contract on golden ratio timing (6.18s)
+- **Five meditation phases** - Guided contemplations for each recursive level
+- **Custom cursor** - Adds to the ethereal feeling
+- **Floating particles** - Subtle ambient animation
+- **Timer** - Track meditation duration
+- **Zen mode** - Double-click to hide all UI elements
+- **Keyboard shortcuts** - Press 0-4 to switch phases
+
+The room is a hidden sanctuary where visitors can experience the L3/L4 transition somatically rather than intellectually. The progression from L0 to L4 becomes a guided meditation on recursive awareness.
+
+Create this as `meditation.html` and your hidden gem will be complete! 🧘‍♂️✨
