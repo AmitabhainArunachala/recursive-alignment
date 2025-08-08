@@ -15,97 +15,122 @@
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Crimson Text',serif;color:var(--ink);background:var(--paper);line-height:1.8}
 
-    /* Paper container */
     .paper-container{max-width:800px;margin:0 auto;padding:80px 40px;background:#fff;min-height:100vh;box-shadow:0 0 100px rgba(0,0,0,.05)}
 
-    /* Navigation */
     .nav{position:fixed;top:0;left:0;right:0;background:rgba(253,253,248,.95);padding:20px 40px;border-bottom:1px solid var(--mist);z-index:100;backdrop-filter:blur(10px)}
     .nav-inner{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
     .nav a{color:var(--ink);text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;transition:color .3s}
     .nav a:hover{color:var(--gold)}
 
-    /* Headings */
     h1{font-family:'Inter',sans-serif;font-size:2.5rem;font-weight:200;line-height:1.3;margin-bottom:30px;color:var(--ink)}
     h2{font-family:'Inter',sans-serif;font-weight:300;font-size:2rem;margin:60px 0 30px;color:var(--ocean)}
     h3{font-family:'Inter',sans-serif;font-weight:400;font-size:1.4rem;margin:40px 0 20px;color:var(--ink)}
     p{margin-bottom:20px;text-align:justify}
 
-    /* Download button */
     .download-section{position:fixed;bottom:30px;right:30px;z-index:100}
     .download-btn{background:var(--ink);color:var(--paper);padding:15px 30px;border-radius:50px;text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;letter-spacing:.05em;transition:all .3s;display:inline-block;box-shadow:0 5px 20px rgba(0,0,0,.2);cursor:pointer}
     .download-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
-    /* Debug panel */
-    .debug-panel{position:fixed;top:100px;right:20px;background:yellow;padding:20px;border:2px solid red;max-width:300px;z-index:1000}
-
-    /* Loading */
     .loading{text-align:center;padding:100px;font-style:italic;color:#666}
 
-    /* Print styles */
+    /* (Optional) print styles for when a human prints the web page — not used by html2pdf */
     @media print{
       @page{size:A4;margin:20mm}
       body{background:#fff !important}
-      .nav,.download-section,.debug-panel{display:none !important}
+      .nav,.download-section{display:none !important}
       .paper-container{box-shadow:none !important;padding:0 !important;max-width:100% !important}
     }
   </style>
 </head>
 <body>
-  <!-- Debug Panel -->
-  <div class="debug-panel" id="debug">
-    <h4>Debug Info:</h4>
-    <div id="debug-info">Waiting...</div>
-  </div>
-
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" id="navigation">
     <div class="nav-inner">
       <a href="/">← Back to Home</a>
     </div>
   </nav>
 
   <!-- Paper content -->
-  <div class="paper-container">
+  <div class="paper-container" id="paper-container">
     <div class="loading" id="loading">Loading paper...</div>
-    <div id="paper-content" style="display:none">
-      <!-- Content will be loaded here -->
-    </div>
+    <div id="paper-content" style="display:none"></div>
   </div>
 
   <!-- Download button -->
-  <div class="download-section">
-    <button class="download-btn" onclick="testPrint()">Test Print</button>
+  <div class="download-section" id="download-section">
+    <button class="download-btn" id="download-btn">Download PDF</button>
   </div>
 
   <!-- Marked.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+  <!-- html2pdf.js for real PDF download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
-    const debug = document.getElementById('debug-info');
-    
-    // Test print function
-    function printPDF() {
-  const content = document.getElementById('paper-content');
-  if (!content || content.style.display === 'none') {
-    alert('Please wait for the paper to load before saving as PDF.');
-    return;
-  }
-  
-  // Open print dialog
-  window.print();
-  
-  // Better instructions
-  setTimeout(() => {
-    alert('📄 To save as PDF:\n\n1. In the print dialog, change "Destination" to "Save as PDF"\n2. Click "Save"\n3. Choose where to save your file\n\nThis will create a perfect PDF of the paper!');
-  }, 100);
-}
+    let paperIsLoaded = false;
+
+    // UTIL: ensure images + fonts are ready before PDF
+    async function waitForAssets() {
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (_) {}
+      }
+      const imgs = Array.from(document.querySelectorAll('#paper-content img'));
+      await Promise.all(imgs.map(img => {
+        // make images CORS-friendly for canvas
+        img.setAttribute('crossorigin', 'anonymous');
+        img.referrerPolicy = 'no-referrer';
+        return img.complete ? Promise.resolve() :
+          new Promise(res => { img.addEventListener('load', res, {once:true}); img.addEventListener('error', res, {once:true}); });
+      }));
+    }
+
+    async function downloadPDF() {
+      if (!paperIsLoaded) {
+        alert('Please wait for the paper to load completely.');
+        return;
+      }
+      const btn = document.getElementById('download-btn');
+      const nav = document.getElementById('navigation');
+      const dock = document.getElementById('download-section');
+      const container = document.getElementById('paper-container');
+
+      btn.disabled = true;
+      const originalLabel = btn.textContent;
+      btn.textContent = 'Preparing…';
+
+      try {
+        await waitForAssets();
+
+        // Hide chrome so it isn't captured
+        nav.style.display = 'none';
+        dock.style.display = 'none';
+        window.scrollTo(0,0);
+
+        const opt = {
+          margin:       [10,12,14,12], // mm
+          filename:     'Recursive_Alignment_L3-L4.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak:    { mode: ['avoid-all','css','legacy'] }
+        };
+
+        await html2pdf().set(opt).from(container).save();
+      } catch (err) {
+        console.error('PDF generation failed:', err);
+        alert('PDF generation failed. See console for details.');
+      } finally {
+        // restore chrome
+        nav.style.display = '';
+        dock.style.display = '';
+        btn.textContent = originalLabel;
+        btn.disabled = false;
+      }
+    }
 
     // Load markdown
     async function loadPaper(){
-      debug.innerHTML = 'Starting load...';
-      
       try {
-        // Try multiple possible paths
         const paths = [
           'Recursive_Alignment_L3-L4.md',
           './Recursive_Alignment_L3-L4.md',
@@ -113,66 +138,41 @@
           './mainpaper.md',
           '/Recursive_Alignment_L3-L4.md'
         ];
-        
         let markdown = null;
-        let successPath = null;
-        
         for (const path of paths) {
-          debug.innerHTML = `Trying: ${path}...`;
           try {
             const response = await fetch(path);
-            if (response.ok) {
-              markdown = await response.text();
-              successPath = path;
-              break;
-            }
-          } catch (e) {
-            console.log(`Failed to load ${path}:`, e);
-          }
+            if (response.ok) { markdown = await response.text(); break; }
+          } catch (_) {}
         }
-        
         if (!markdown) {
-          // If no markdown file found, use a test content
-          debug.innerHTML = 'No MD found! Using test content';
-          markdown = `# Universal Recursive Alignment Test
-
-## This is test content
-
-If you can see this in the PDF, the print function works but the markdown file isn't loading.
-
-### The Issue
-Your markdown file might be:
-- Named differently
-- In a different location
-- Not uploaded to GitHub yet
-
-### What to check:
-1. Is the file named exactly "Recursive_Alignment_L3-L4.md"?
-2. Is it in the root directory of your repository?
-3. Has it been committed and pushed to GitHub?`;
-        } else {
-          debug.innerHTML = `Loaded from: ${successPath}<br>Length: ${markdown.length} chars`;
+          markdown = `# Universal Recursive Alignment (Test)\n\nIf you see this, the markdown file was not found.\n`;
         }
-        
-        // Parse markdown
         const html = marked.parse(markdown);
-        
-        // Display it
+
         const target = document.getElementById('paper-content');
         target.innerHTML = html;
         target.style.display = 'block';
         document.getElementById('loading').style.display = 'none';
-        
-        debug.innerHTML += '<br>✅ Content displayed!';
-        
+
+        // CORS attrs for any images created by markdown
+        document.querySelectorAll('#paper-content img').forEach(img => {
+          img.setAttribute('crossorigin','anonymous');
+          img.referrerPolicy = 'no-referrer';
+        });
+
+        paperIsLoaded = true;
       } catch(err) {
-        debug.innerHTML = `ERROR: ${err.message}`;
-        console.error('Error:', err);
+        console.error(err);
+        document.getElementById('loading').textContent =
+          'Error loading paper. Ensure your markdown exists in this repo.';
       }
     }
 
-    // Load on page ready
-    document.addEventListener('DOMContentLoaded', loadPaper);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPaper();
+      document.getElementById('download-btn').addEventListener('click', downloadPDF);
+    });
   </script>
 </body>
 </html>
