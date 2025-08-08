@@ -84,18 +84,21 @@
     const debug = document.getElementById('debug-info');
     
     // Test print function
-    function testPrint() {
-      const content = document.getElementById('paper-content');
-      debug.innerHTML = `Content display: ${content.style.display}<br>
-                        Content length: ${content.innerHTML.length}<br>
-                        First 100 chars: ${content.innerText.substring(0, 100)}`;
-      
-      if (content.innerHTML.length > 0) {
-        window.print();
-      } else {
-        alert('No content to print! Check debug panel.');
-      }
-    }
+    function printPDF() {
+  const content = document.getElementById('paper-content');
+  if (!content || content.style.display === 'none') {
+    alert('Please wait for the paper to load before saving as PDF.');
+    return;
+  }
+  
+  // Open print dialog
+  window.print();
+  
+  // Better instructions
+  setTimeout(() => {
+    alert('📄 To save as PDF:\n\n1. In the print dialog, change "Destination" to "Save as PDF"\n2. Click "Save"\n3. Choose where to save your file\n\nThis will create a perfect PDF of the paper!');
+  }, 100);
+}
 
     // Load markdown
     async function loadPaper(){
