@@ -77,7 +77,7 @@
 
     /* Keep blocks intact across pages */
     img,svg,table,pre,blockquote,figure{break-inside:avoid;page-break-inside:avoid}
-    h1,h2,h3{break-after:avoid}
+    h1,h2,h3{break-after:avoid;page-break-after:avoid}
 
     /* Download button */
     .download-section{position:fixed;bottom:30px;right:30px;z-index:100}
@@ -146,64 +146,90 @@
     // Global flag to track if paper is loaded
     let paperIsLoaded = false;
 
-    // Handle PDF download
-    function handlePDFDownload() {
-      if (!paperIsLoaded) {
+    // Handle PDF download with proper waiting and visibility
+    async function handlePDFDownload(){
+      if(!paperIsLoaded){
         alert('Please wait for the paper to load completely.');
         return;
       }
 
-      // Get the actual paper content div
-      const paperContent = document.getElementById('paper-content');
-      
-      // Create a temporary container with just the paper content
-      const tempContainer = document.createElement('div');
-      tempContainer.style.padding = '20px';
-      tempContainer.style.background = 'white';
-      tempContainer.innerHTML = paperContent.innerHTML;
-      
-      // Temporarily add it to the body (hidden)
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      document.body.appendChild(tempContainer);
-
-      // Generate PDF from the temporary container
-      const opt = {
-        margin:       0.75,
-        filename:     'Recursive_Alignment_L3-L4.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          logging: false,
-          windowWidth: 800
-        },
-        jsPDF:        { 
-          unit: 'in', 
-          format: 'letter', 
-          orientation: 'portrait' 
-        },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      // Update button text
       const btn = document.querySelector('.download-btn');
       const originalText = btn.textContent;
-      btn.textContent = 'Generating PDF...';
+      btn.textContent = 'Preparing...';
 
-      html2pdf().set(opt).from(tempContainer).save()
-        .then(() => {
-          // Clean up
-          document.body.removeChild(tempContainer);
-          btn.textContent = originalText;
-        })
-        .catch((error) => {
-          console.error('PDF generation failed:', error);
-          document.body.removeChild(tempContainer);
-          btn.textContent = originalText;
-          alert('PDF generation failed. Please try again.');
-        });
+      try{
+        // Wait for fonts to be ready
+        if(document.fonts && document.fonts.ready){
+          await document.fonts.ready;
+        }
+
+        // Wait for MathJax if present
+        if(window.MathJax){
+          if(MathJax.typesetPromise){
+            await MathJax.typesetPromise();
+          }else if(MathJax.typeset){
+            MathJax.typeset();
+          }
+        }
+
+        // Ensure all images are loaded
+        await Promise.all(
+          Array.from(document.querySelectorAll('#paper-content img'))
+            .filter(img => !img.complete)
+            .map(img => new Promise(res => {
+              img.addEventListener('load', res, {once:true});
+              img.addEventListener('error', res, {once:true});
+            }))
+        );
+
+        // Clone the paper content
+        const source = document.getElementById('paper-content');
+        const cloneWrapper = document.createElement('div');
+        cloneWrapper.id = 'pdf-export-wrapper';
+        
+        // Critical: use visibility:hidden instead of off-screen positioning
+        cloneWrapper.style.maxWidth = '800px';
+        cloneWrapper.style.margin = '0 auto';
+        cloneWrapper.style.padding = '60px 40px 40px';
+        cloneWrapper.style.background = 'white';
+        cloneWrapper.style.visibility = 'hidden';  // Hidden but maintains layout
+        cloneWrapper.appendChild(source.cloneNode(true));
+        document.body.appendChild(cloneWrapper);
+
+        // PDF generation options
+        const opt = {
+          margin:       0.5,
+          filename:     'Recursive_Alignment_L3-L4.pdf',
+          image:        { type: 'jpeg', quality: 0.95 },
+          html2canvas:  {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            logging: false,
+            windowWidth: 800  // Consistent width for layout
+          },
+          jsPDF:        {
+            unit: 'in',
+            format: 'letter',
+            orientation: 'portrait'
+          },
+          pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        btn.textContent = 'Generating PDF...';
+
+        // Generate and save the PDF
+        await html2pdf().set(opt).from(cloneWrapper).save();
+
+      }catch(err){
+        console.error('PDF generation failed:', err);
+        alert('PDF generation failed. See console for details.');
+      }finally{
+        // Clean up the temporary wrapper
+        const w = document.getElementById('pdf-export-wrapper');
+        if(w) w.remove();
+        btn.textContent = originalText;
+      }
     }
 
     // Try these markdown files in order
