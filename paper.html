@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Recursive Alignment - The L3/L4 Transition</title>
+    
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@200;300;400;500&display=swap');
         
@@ -300,9 +316,268 @@
             color: #666;
             vertical-align: super;
         }
+        
+        /* Skip to content link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1000;
+            border-radius: 2px;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: var(--mist);
+            padding: 30px;
+            margin: 40px 0;
+            border-left: 3px solid var(--ocean);
+            border-radius: 2px;
+        }
+        
+        .toc h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            margin: 0 0 20px 0;
+            color: var(--ocean);
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .toc li {
+            margin: 0;
+        }
+        
+        .toc a {
+            display: block;
+            padding: 8px 0;
+            color: var(--ink);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            padding-left: 15px;
+        }
+        
+        .toc a:hover {
+            color: var(--ocean);
+            border-left-color: var(--gold);
+            padding-left: 20px;
+        }
+        
+        .toc a.active {
+            color: var(--ocean);
+            border-left-color: var(--ocean);
+            font-weight: 600;
+            padding-left: 20px;
+        }
+        
+        .toc-level-1 {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .toc-level-2 {
+            font-size: 1rem;
+            padding-left: 20px;
+        }
+        
+        .toc-level-3 {
+            font-size: 0.95rem;
+            padding-left: 40px;
+        }
+        
+        /* Scroll margin for headings under fixed header */
+        h1, h2, h3, h4, h5, h6 {
+            scroll-margin-top: 100px;
+        }
+        
+        /* Figure numbering with CSS counters */
+        body {
+            counter-reset: figure-counter;
+        }
+        
+        .figure {
+            counter-increment: figure-counter;
+        }
+        
+        .figure::before {
+            content: "Figure " counter(figure-counter) ": ";
+            font-weight: 600;
+            color: var(--ocean);
+        }
+        
+        /* Enhanced blockquotes */
+        blockquote {
+            border-left: 4px solid var(--gold);
+            margin: 30px 0;
+            padding: 20px 30px;
+            background: var(--mist);
+            font-style: italic;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        /* Callout boxes */
+        .callout {
+            background: linear-gradient(135deg, var(--foam) 0%, var(--paper) 100%);
+            border: 1px solid var(--ocean);
+            border-radius: 5px;
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .callout::before {
+            content: "💡";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .callout h4 {
+            margin-left: 30px;
+            margin-top: 0;
+        }
+        
+        .callout p {
+            margin-left: 30px;
+        }
+        
+        /* Improved contrast for accessibility */
+        a {
+            color: var(--ocean);
+            text-decoration: underline;
+        }
+        
+        a:hover {
+            color: var(--gold);
+        }
+        
+        /* Enhanced focus styles for keyboard navigation */
+        *:focus {
+            outline: 2px solid var(--ocean);
+            outline-offset: 2px;
+        }
+        
+        .nav a:focus {
+            background: rgba(44, 82, 130, 0.1);
+            border-radius: 3px;
+        }
+        
+        /* Print styles */
+        @media print {
+            @page {
+                margin: 1in;
+                size: letter;
+            }
+            
+            /* Hide elements not needed in print */
+            .nav, .download-section, .toc {
+                display: none !important;
+            }
+            
+            /* Ensure content starts at top */
+            .paper-container {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+                box-shadow: none !important;
+            }
+            
+            /* Force black text for better printing */
+            body, h1, h2, h3, h4, h5, h6, p, li {
+                color: #000 !important;
+            }
+            
+            /* Preserve colors for important elements */
+            .abstract, .executive-summary {
+                background: #f5f5f5 !important;
+                border-left: 3px solid #333 !important;
+            }
+            
+            /* Page break controls */
+            h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid;
+                page-break-inside: avoid;
+            }
+            
+            .abstract, .executive-summary, .figure, pre, blockquote, table {
+                page-break-inside: avoid;
+            }
+            
+            /* Avoid orphaned headings */
+            h1, h2, h3, h4, h5, h6 {
+                orphans: 3;
+                widows: 3;
+            }
+            
+            /* Ensure tables fit */
+            table {
+                font-size: 0.8rem;
+            }
+            
+            /* Better paragraph spacing for print */
+            p {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* MathJax container styling */
+        .MathJax {
+            font-size: 1.1rem !important;
+        }
+        
+        /* Reference links styling */
+        .ref-link {
+            color: var(--ocean);
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid var(--ocean);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        
+        .ref-link:hover {
+            background: var(--ocean);
+            color: var(--paper);
+        }
+        
+        /* References section */
+        .references {
+            border-top: 2px solid var(--mist);
+            margin-top: 60px;
+            padding-top: 40px;
+        }
+        
+        .references h2 {
+            color: var(--ocean);
+        }
+        
+        .reference-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            text-indent: -20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#paper-content" class="skip-link">Skip to content</a>
+    
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-inner">
@@ -327,33 +602,148 @@
         <a href="#" class="download-btn" onclick="generatePDF()">Download PDF</a>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script>
+        // Simple markdown parser for basic formatting
+        function parseMarkdown(markdown) {
+            let html = markdown;
+            
+            // Headers with proper ID generation
+            html = html.replace(/^### (.*$)/gim, (match, title) => {
+                const id = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                return `<h3 id="${id}">${title}</h3>`;
+            });
+            html = html.replace(/^## (.*$)/gim, (match, title) => {
+                const id = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                return `<h2 id="${id}">${title}</h2>`;
+            });
+            html = html.replace(/^# (.*$)/gim, (match, title) => {
+                const id = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                return `<h1 id="${id}">${title}</h1>`;
+            });
+            
+            // Process figures
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<div class="figure"><img src="$2" alt="$1" />$1</div>');
+            
+            // Bold and italic
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            
+            // Process citations [1], [2], etc.
+            html = html.replace(/\[(\d+)\]/g, '<a href="#ref-$1" class="ref-link">[$1]</a>');
+            
+            // Lists
+            html = html.replace(/^\d+\. (.*)$/gim, '<li>$1</li>');
+            html = html.replace(/^\- (.*)$/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            // Code blocks
+            html = html.replace(/```([^`]*)```/g, '<pre><code>$1</code></pre>');
+            html = html.replace(/`([^`]*)`/g, '<code>$1</code>');
+            
+            // Math expressions (for MathJax)
+            html = html.replace(/\$\$(.*?)\$\$/g, '<div class="math">$$$$$$1$$$$</div>');
+            html = html.replace(/\$([^$]+)\$/g, '<span class="math">$$$1$$</span>');
+            
+            // Horizontal rules
+            html = html.replace(/^---$/gim, '<hr>');
+            
+            // Blockquotes
+            html = html.replace(/^> (.*)$/gim, '<blockquote>$1</blockquote>');
+            
+            // Paragraphs
+            html = html.split('\n\n').map(para => {
+                para = para.trim();
+                if (!para) return '';
+                
+                // Don't wrap headings, lists, code blocks, etc. in paragraphs
+                if (para.match(/^<(h[1-6]|ul|ol|li|pre|blockquote|hr|div)/)) {
+                    return para;
+                }
+                
+                return `<p>${para}</p>`;
+            }).join('\n');
+            
+            // Clean up
+            html = html.replace(/<p><\/p>/g, '');
+            
+            return html;
+        }
+        
+        // Process references section
+        function processReferences(content) {
+            // Find references section
+            const referencesMatch = content.match(/(## References|# References)(.*?)(?=##|#|$)/s);
+            if (referencesMatch) {
+                let referencesSection = referencesMatch[2];
+                
+                // Process numbered references
+                referencesSection = referencesSection.replace(/(\d+)\.\s+([^\n]+)/g, (match, num, text) => {
+                    return `<div class="reference-item" id="ref-${num}">${num}. ${text}</div>`;
+                });
+                
+                // Replace the references section
+                content = content.replace(referencesMatch[0], 
+                    `<div class="references"><h2 id="references">References</h2>${referencesSection}</div>`);
+            }
+            
+            return content;
+        }
+        
+        // Generate table of contents from headings
+        function generateTOC(content) {
+            const headings = content.match(/<h[1-6][^>]*>.*?<\/h[1-6]>/g) || [];
+            if (headings.length === 0) return '';
+            
+            let toc = '<nav class="toc"><h3>Table of Contents</h3><ul>';
+            
+            headings.forEach(heading => {
+                const level = parseInt(heading.match(/<h([1-6])/)[1]);
+                const text = heading.replace(/<[^>]*>/g, '');
+                const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                
+                // Update heading with proper id
+                const updatedHeading = heading.replace(/id="[^"]*"/, '').replace(/<h([1-6])/, `<h$1 id="${id}"`);
+                content = content.replace(heading, updatedHeading);
+                
+                toc += `<li class="toc-level-${level}"><a href="#${id}">${text}</a></li>`;
+            });
+            
+            toc += '</ul></nav>';
+            return { toc, content };
+        }
+
         // Fetch and render the markdown
         async function loadPaper() {
             try {
-                const response = await fetch('mainpaper.md');
+                const response = await fetch('Recursive_Alignment_L3-L4.md');
                 const markdown = await response.text();
                 
-                // Configure marked for better rendering
-                marked.setOptions({
-                    breaks: true,
-                    gfm: true,
-                    headerIds: true,
-                    smartLists: true,
-                    smartypants: true
-                });
+                // Parse markdown to HTML
+                let html = parseMarkdown(markdown);
                 
-                // Render markdown to HTML
-                const html = marked.parse(markdown);
+                // Process references
+                html = processReferences(html);
                 
-                // Display the content
-                document.getElementById('paper-content').innerHTML = html;
+                // Generate table of contents
+                const { toc, content } = generateTOC(html);
+                
+                // Display the content with TOC
+                document.getElementById('paper-content').innerHTML = toc + content;
                 document.getElementById('paper-content').style.display = 'block';
                 document.getElementById('loading').style.display = 'none';
                 
-                // Add smooth scrolling to nav links
-                document.querySelectorAll('.nav a[href^="#"]').forEach(anchor => {
+                // Initialize MathJax rendering
+                if (window.MathJax) {
+                    MathJax.typesetPromise([document.getElementById('paper-content')]).then(() => {
+                        console.log('MathJax rendering complete');
+                    });
+                }
+                
+                // Add smooth scrolling to nav links and TOC links
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                     anchor.addEventListener('click', function (e) {
                         e.preventDefault();
                         const target = document.querySelector(this.getAttribute('href'));
@@ -362,15 +752,41 @@
                         }
                     });
                 });
+                
+                // Highlight current section in TOC
+                highlightCurrentSection();
+                window.addEventListener('scroll', highlightCurrentSection);
+                
             } catch (error) {
                 console.error('Error loading paper:', error);
                 document.getElementById('loading').innerHTML = 'Error loading paper. Please try again.';
             }
         }
         
-        // PDF generation (placeholder - we'll implement this later)
+        // Highlight current section in TOC based on scroll position
+        function highlightCurrentSection() {
+            const headings = document.querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]');
+            const tocLinks = document.querySelectorAll('.toc a');
+            
+            let current = '';
+            headings.forEach(heading => {
+                const rect = heading.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = heading.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // PDF generation using window.print()
         function generatePDF() {
-            alert('PDF generation coming soon! For now, you can use your browser\'s Print to PDF function (Ctrl/Cmd + P)');
+            window.print();
         }
         
         // Load paper on page load
