@@ -19,7 +19,7 @@
     /* Paper container */
     .paper-container{max-width:800px;margin:0 auto;padding:80px 40px;background:#fff;min-height:100vh;box-shadow:0 0 100px rgba(0,0,0,.05)}
 
-    /* Navigation */
+    /* Navigation - hide for PDF */
     .nav{position:fixed;top:0;left:0;right:0;background:rgba(253,253,248,.95);padding:20px 40px;border-bottom:1px solid var(--mist);z-index:100;backdrop-filter:blur(10px)}
     .nav-inner{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
     .nav a{color:var(--ink);text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;transition:color .3s}
@@ -90,6 +90,11 @@
     /* Footnotes */
     .footnote{font-size:.85rem;color:#666;vertical-align:super}
 
+    /* Hide elements for PDF generation */
+    .pdf-hide {
+      display: none !important;
+    }
+
     /* PRINT (for good PDFs) */
     @media print{
       @page{size:A4;margin:22mm 18mm 24mm 18mm}
@@ -115,7 +120,7 @@
 </head>
 <body>
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" id="navigation">
     <div class="nav-inner">
       <a href="/">← Back to Home</a>
       <div class="nav-links">
@@ -134,8 +139,8 @@
   </div>
 
   <!-- Download button -->
-  <div class="download-section">
-    <a href="#" class="download-btn" onclick="generatePDF(); return false;">Download PDF</a>
+  <div class="download-section" id="download-section">
+    <a href="#" class="download-btn" onclick="handlePDFDownload(); return false;">Download PDF</a>
   </div>
 
   <!-- Marked.js -->
@@ -145,42 +150,60 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
-    // Global variable to track if paper is loaded
-    let paperLoaded = false;
-
-    // PDF generation function
-    function generatePDF() {
-      // Check if paper is loaded
-      if (!paperLoaded) {
-        alert('Please wait for the paper to finish loading before downloading.');
+    // Handle PDF download with delay
+    function handlePDFDownload() {
+      // Check if content is visible
+      const content = document.getElementById('paper-content');
+      if (!content || content.style.display === 'none') {
+        alert('Please wait for the paper to load completely.');
         return;
       }
 
-      // Hide the loading message if it's still visible
-      const loadingEl = document.getElementById('loading');
-      if (loadingEl) {
-        loadingEl.style.display = 'none';
-      }
+      // Hide nav and download button temporarily
+      const nav = document.getElementById('navigation');
+      const downloadSection = document.getElementById('download-section');
+      nav.style.display = 'none';
+      downloadSection.style.display = 'none';
 
-      // Generate PDF from the paper content
-      const el = document.getElementById('paper-container');
+      // Small delay to ensure everything is rendered
+      setTimeout(() => {
+        generatePDF().finally(() => {
+          // Restore nav and button after PDF generation
+          nav.style.display = '';
+          downloadSection.style.display = '';
+        });
+      }, 100);
+    }
+
+    // PDF generation function
+    async function generatePDF() {
+      const element = document.getElementById('paper-container');
+      
+      // Options for html2pdf
       const opt = {
-        margin:       [10,12,14,12],          // top, right, bottom, left (mm)
+        margin:       0.5,
         filename:     'Recursive_Alignment_L3-L4.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all','css','legacy'] }
+        image:        { type: 'jpeg', quality: 0.95 },
+        html2canvas:  { 
+          scale: 2, 
+          useCORS: true,
+          letterRendering: true,
+          logging: false
+        },
+        jsPDF:        { 
+          unit: 'in', 
+          format: 'letter', 
+          orientation: 'portrait' 
+        },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
       };
-      
-      // Show a message while generating
-      const btn = document.querySelector('.download-btn');
-      const originalText = btn.textContent;
-      btn.textContent = 'Generating PDF...';
-      
-      html2pdf().set(opt).from(el).save().then(() => {
-        btn.textContent = originalText;
-      });
+
+      try {
+        await html2pdf().set(opt).from(element).save();
+      } catch (error) {
+        console.error('PDF generation failed:', error);
+        alert('PDF generation failed. Please try again.');
+      }
     }
 
     // Try these markdown files in order
@@ -216,9 +239,6 @@
 
         // Typeset math after insertion (if MathJax loaded)
         if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
-
-        // Mark paper as loaded
-        paperLoaded = true;
 
       }catch(err){
         console.error('Error loading paper:', err);
