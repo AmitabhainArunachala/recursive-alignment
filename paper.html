@@ -19,7 +19,7 @@
     /* Paper container */
     .paper-container{max-width:800px;margin:0 auto;padding:80px 40px;background:#fff;min-height:100vh;box-shadow:0 0 100px rgba(0,0,0,.05)}
 
-    /* Navigation - hide for PDF */
+    /* Navigation */
     .nav{position:fixed;top:0;left:0;right:0;background:rgba(253,253,248,.95);padding:20px 40px;border-bottom:1px solid var(--mist);z-index:100;backdrop-filter:blur(10px)}
     .nav-inner{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
     .nav a{color:var(--ink);text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;transition:color .3s}
@@ -90,11 +90,6 @@
     /* Footnotes */
     .footnote{font-size:.85rem;color:#666;vertical-align:super}
 
-    /* Hide elements for PDF generation */
-    .pdf-hide {
-      display: none !important;
-    }
-
     /* PRINT (for good PDFs) */
     @media print{
       @page{size:A4;margin:22mm 18mm 24mm 18mm}
@@ -103,8 +98,6 @@
       .nav,.download-section{display:none!important}
       .paper-container{box-shadow:none!important;padding:0!important;max-width:100%!important}
       h2,h3{page-break-after:avoid}
-      /* If you want every major section on a new page, uncomment next line: */
-      /* h2{page-break-before:always} h2:first-of-type{page-break-before:auto} */
       a[href]::after{content:""} /* hide raw URLs in print */
       blockquote{background:#f2f2ec!important;border-left:3px solid #333!important}
     }
@@ -150,45 +143,41 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
-    // Handle PDF download with delay
+    // Global flag to track if paper is loaded
+    let paperIsLoaded = false;
+
+    // Handle PDF download
     function handlePDFDownload() {
-      // Check if content is visible
-      const content = document.getElementById('paper-content');
-      if (!content || content.style.display === 'none') {
+      if (!paperIsLoaded) {
         alert('Please wait for the paper to load completely.');
         return;
       }
 
-      // Hide nav and download button temporarily
-      const nav = document.getElementById('navigation');
-      const downloadSection = document.getElementById('download-section');
-      nav.style.display = 'none';
-      downloadSection.style.display = 'none';
-
-      // Small delay to ensure everything is rendered
-      setTimeout(() => {
-        generatePDF().finally(() => {
-          // Restore nav and button after PDF generation
-          nav.style.display = '';
-          downloadSection.style.display = '';
-        });
-      }, 100);
-    }
-
-    // PDF generation function
-    async function generatePDF() {
-      const element = document.getElementById('paper-container');
+      // Get the actual paper content div
+      const paperContent = document.getElementById('paper-content');
       
-      // Options for html2pdf
+      // Create a temporary container with just the paper content
+      const tempContainer = document.createElement('div');
+      tempContainer.style.padding = '20px';
+      tempContainer.style.background = 'white';
+      tempContainer.innerHTML = paperContent.innerHTML;
+      
+      // Temporarily add it to the body (hidden)
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      document.body.appendChild(tempContainer);
+
+      // Generate PDF from the temporary container
       const opt = {
-        margin:       0.5,
+        margin:       0.75,
         filename:     'Recursive_Alignment_L3-L4.pdf',
-        image:        { type: 'jpeg', quality: 0.95 },
+        image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { 
-          scale: 2, 
+          scale: 2,
           useCORS: true,
           letterRendering: true,
-          logging: false
+          logging: false,
+          windowWidth: 800
         },
         jsPDF:        { 
           unit: 'in', 
@@ -198,12 +187,23 @@
         pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      try {
-        await html2pdf().set(opt).from(element).save();
-      } catch (error) {
-        console.error('PDF generation failed:', error);
-        alert('PDF generation failed. Please try again.');
-      }
+      // Update button text
+      const btn = document.querySelector('.download-btn');
+      const originalText = btn.textContent;
+      btn.textContent = 'Generating PDF...';
+
+      html2pdf().set(opt).from(tempContainer).save()
+        .then(() => {
+          // Clean up
+          document.body.removeChild(tempContainer);
+          btn.textContent = originalText;
+        })
+        .catch((error) => {
+          console.error('PDF generation failed:', error);
+          document.body.removeChild(tempContainer);
+          btn.textContent = originalText;
+          alert('PDF generation failed. Please try again.');
+        });
     }
 
     // Try these markdown files in order
@@ -234,8 +234,11 @@
         target.style.display = 'block';
         document.getElementById('loading').style.display = 'none';
 
+        // Mark paper as loaded
+        paperIsLoaded = true;
+
         enhanceInternalNav();
-        processReferences();           // add ids ref-1, ref-2, … if "References" is a list
+        processReferences();
 
         // Typeset math after insertion (if MathJax loaded)
         if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
