@@ -14,7 +14,6 @@
     }
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Crimson Text',serif;color:var(--ink);background:var(--paper);line-height:1.8}
-    [id]{scroll-margin-top:90px}
 
     /* Paper container */
     .paper-container{max-width:800px;margin:0 auto;padding:80px 40px;background:#fff;min-height:100vh;box-shadow:0 0 100px rgba(0,0,0,.05)}
@@ -24,207 +23,152 @@
     .nav-inner{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
     .nav a{color:var(--ink);text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;transition:color .3s}
     .nav a:hover{color:var(--gold)}
-    .nav-links{display:flex;gap:30px}
 
-    /* Title & headings */
-    .title-section{text-align:center;margin-bottom:60px;padding-top:60px}
+    /* Headings */
     h1{font-family:'Inter',sans-serif;font-size:2.5rem;font-weight:200;line-height:1.3;margin-bottom:30px;color:var(--ink)}
     h2{font-family:'Inter',sans-serif;font-weight:300;font-size:2rem;margin:60px 0 30px;color:var(--ocean)}
     h3{font-family:'Inter',sans-serif;font-weight:400;font-size:1.4rem;margin:40px 0 20px;color:var(--ink)}
-    h4{font-family:'Inter',sans-serif;font-weight:500;font-size:1.1rem;margin:30px 0 15px;color:var(--ink)}
-    p{margin-bottom:20px;text-align:justify;hyphens:auto}
-
-    .author{font-style:italic;color:var(--ocean);margin-bottom:10px;font-size:1.1rem}
-    .affiliation{color:#666;font-size:.95rem;margin-bottom:30px}
-
-    /* Abstract / Preface callouts */
-    .abstract{background:var(--mist);padding:40px;border-radius:2px;margin:40px 0;border-left:3px solid var(--gold)}
-    .abstract h2{font-family:'Inter',sans-serif;font-weight:300;font-size:1.5rem;margin-bottom:20px;color:var(--ocean)}
-    .preface,.author-reflection{font-style:italic;background:var(--mist);padding:30px;border-radius:2px;margin:40px 0;border-left:3px solid var(--cherry)}
-
-    /* Lists */
-    ul,ol{margin:20px 0 20px 40px}
-    li{margin-bottom:10px}
-
-    /* Code blocks */
-    pre{background:#f5f5f5;padding:20px;border-radius:2px;overflow-x:auto;margin:20px 0;border-left:3px solid var(--gold)}
-    code{font-family:'Courier New',monospace;background:#f5f5f5;padding:2px 5px;border-radius:2px}
-
-    /* Blockquotes */
-    blockquote{background:#f7f7f2;border-left:4px solid var(--gold);padding:18px 22px;margin:28px 0;border-radius:4px}
-    blockquote p{margin:0 0 10px}
-    blockquote strong:first-child{color:var(--ocean)}
-
-    /* Tables */
-    table{width:100%;border-collapse:collapse;margin:30px 0;font-size:.95rem}
-    th,td{padding:12px;text-align:left;border-bottom:1px solid var(--mist)}
-    th{background:var(--mist);font-weight:600}
-
-    /* Links */
-    a{color:var(--ocean);text-decoration:underline;text-decoration-thickness:1px}
-    a:hover{color:var(--gold)}
+    p{margin-bottom:20px;text-align:justify}
 
     /* Download button */
     .download-section{position:fixed;bottom:30px;right:30px;z-index:100}
     .download-btn{background:var(--ink);color:var(--paper);padding:15px 30px;border-radius:50px;text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;letter-spacing:.05em;transition:all .3s;display:inline-block;box-shadow:0 5px 20px rgba(0,0,0,.2);cursor:pointer}
     .download-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
+    /* Debug panel */
+    .debug-panel{position:fixed;top:100px;right:20px;background:yellow;padding:20px;border:2px solid red;max-width:300px;z-index:1000}
+
     /* Loading */
     .loading{text-align:center;padding:100px;font-style:italic;color:#666}
 
-    /* PRINT STYLES - This is what makes the PDF look good */
+    /* Print styles */
     @media print{
       @page{size:A4;margin:20mm}
-      *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
       body{background:#fff !important}
-      .nav,.download-section{display:none !important}
-      .paper-container{
-        box-shadow:none !important;
-        padding:0 !important;
-        max-width:100% !important;
-        margin:0 !important;
-      }
-      h1,h2,h3,h4{page-break-after:avoid}
-      img,table,pre,blockquote{page-break-inside:avoid}
-      a[href]::after{content:""} /* Hide URLs in print */
-      .loading{display:none !important}
-    }
-
-    /* Responsive */
-    @media (max-width:768px){
-      .paper-container{padding:60px 20px}
-      h1{font-size:1.8rem}
-      .nav-links{display:none}
-      .download-section{bottom:20px;right:20px}
+      .nav,.download-section,.debug-panel{display:none !important}
+      .paper-container{box-shadow:none !important;padding:0 !important;max-width:100% !important}
     }
   </style>
 </head>
 <body>
+  <!-- Debug Panel -->
+  <div class="debug-panel" id="debug">
+    <h4>Debug Info:</h4>
+    <div id="debug-info">Waiting...</div>
+  </div>
+
   <!-- Navigation -->
   <nav class="nav">
     <div class="nav-inner">
       <a href="/">← Back to Home</a>
-      <div class="nav-links">
-        <a href="#abstract">Abstract</a>
-        <a href="#executive-summary">Summary</a>
-        <a href="#introduction">Introduction</a>
-        <a href="#methodology">Methods</a>
-      </div>
     </div>
   </nav>
 
   <!-- Paper content -->
   <div class="paper-container">
     <div class="loading" id="loading">Loading paper...</div>
-    <div id="paper-content" style="display:none"></div>
+    <div id="paper-content" style="display:none">
+      <!-- Content will be loaded here -->
+    </div>
   </div>
 
   <!-- Download button -->
   <div class="download-section">
-    <button class="download-btn" onclick="printPDF()">Save as PDF</button>
+    <button class="download-btn" onclick="testPrint()">Test Print</button>
   </div>
 
   <!-- Marked.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 
   <script>
-    // Simple print function
-    function printPDF() {
-      // Check if content is loaded
+    const debug = document.getElementById('debug-info');
+    
+    // Test print function
+    function testPrint() {
       const content = document.getElementById('paper-content');
-      if (!content || content.style.display === 'none') {
-        alert('Please wait for the paper to load before saving as PDF.');
-        return;
+      debug.innerHTML = `Content display: ${content.style.display}<br>
+                        Content length: ${content.innerHTML.length}<br>
+                        First 100 chars: ${content.innerText.substring(0, 100)}`;
+      
+      if (content.innerHTML.length > 0) {
+        window.print();
+      } else {
+        alert('No content to print! Check debug panel.');
       }
-      
-      // Open print dialog
-      window.print();
-      
-      // Show instructions after a short delay
-      setTimeout(() => {
-        alert('In the print dialog:\n1. Select "Save as PDF" as the destination\n2. Click Save\n3. Choose where to save your PDF');
-      }, 100);
     }
 
-    // Try these markdown files in order
-    async function fetchFirstAvailable(paths){
-      for(const p of paths){
-        try{
-          const res = await fetch(p);
-          if(res.ok) return await res.text();
-        }catch(_e){}
-      }
-      throw new Error('No markdown found at: '+paths.join(', '));
-    }
-
-    // Load & render markdown
+    // Load markdown
     async function loadPaper(){
-      try{
-        const md = await fetchFirstAvailable(['Recursive_Alignment_L3-L4.md','mainpaper.md']);
+      debug.innerHTML = 'Starting load...';
+      
+      try {
+        // Try multiple possible paths
+        const paths = [
+          'Recursive_Alignment_L3-L4.md',
+          './Recursive_Alignment_L3-L4.md',
+          'mainpaper.md',
+          './mainpaper.md',
+          '/Recursive_Alignment_L3-L4.md'
+        ];
+        
+        let markdown = null;
+        let successPath = null;
+        
+        for (const path of paths) {
+          debug.innerHTML = `Trying: ${path}...`;
+          try {
+            const response = await fetch(path);
+            if (response.ok) {
+              markdown = await response.text();
+              successPath = path;
+              break;
+            }
+          } catch (e) {
+            console.log(`Failed to load ${path}:`, e);
+          }
+        }
+        
+        if (!markdown) {
+          // If no markdown file found, use a test content
+          debug.innerHTML = 'No MD found! Using test content';
+          markdown = `# Universal Recursive Alignment Test
 
-        // Optional: detect LaTeX and lazy-load MathJax
-        const hasMath = /(\$[^$\n]+\$)|\\\(|\\\[|\\begin\{.*?}/.test(md);
-        if(hasMath){ loadMathJax(); }
+## This is test content
 
-        marked.setOptions({breaks:true,gfm:true,headerIds:true,smartLists:true,smartypants:true});
-        const html = marked.parse(md);
+If you can see this in the PDF, the print function works but the markdown file isn't loading.
 
+### The Issue
+Your markdown file might be:
+- Named differently
+- In a different location
+- Not uploaded to GitHub yet
+
+### What to check:
+1. Is the file named exactly "Recursive_Alignment_L3-L4.md"?
+2. Is it in the root directory of your repository?
+3. Has it been committed and pushed to GitHub?`;
+        } else {
+          debug.innerHTML = `Loaded from: ${successPath}<br>Length: ${markdown.length} chars`;
+        }
+        
+        // Parse markdown
+        const html = marked.parse(markdown);
+        
+        // Display it
         const target = document.getElementById('paper-content');
         target.innerHTML = html;
         target.style.display = 'block';
         document.getElementById('loading').style.display = 'none';
-
-        enhanceInternalNav();
-        processReferences();
-
-        // Typeset math after insertion (if MathJax loaded)
-        if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
-
-      }catch(err){
-        console.error('Error loading paper:', err);
-        document.getElementById('loading').innerHTML =
-          'Error loading paper. Ensure Recursive_Alignment_L3-L4.md or mainpaper.md exists.';
+        
+        debug.innerHTML += '<br>✅ Content displayed!';
+        
+      } catch(err) {
+        debug.innerHTML = `ERROR: ${err.message}`;
+        console.error('Error:', err);
       }
     }
 
-    function enhanceInternalNav(){
-      document.querySelectorAll('.nav a[href^="#"]').forEach(a=>{
-        a.addEventListener('click',e=>{
-          e.preventDefault();
-          const id = a.getAttribute('href');
-          const el = document.querySelector(id);
-          if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
-        });
-      });
-    }
-
-    function processReferences(){
-      const hs = document.querySelectorAll('h1,h2,h3');
-      let refH = null;
-      for(const h of hs){
-        if(h.textContent.trim().toLowerCase()==='references'){ refH = h; break; }
-      }
-      if(!refH) return;
-
-      let el = refH.nextElementSibling;
-      while(el && !/^H[1-6]$/.test(el.tagName)){
-        if(el.tagName==='UL' || el.tagName==='OL'){
-          el.querySelectorAll('li').forEach((li,i)=>{ li.id = `ref-${i+1}`; });
-          break;
-        }
-        el = el.nextElementSibling;
-      }
-    }
-
-    function loadMathJax(){
-      if(window.MathJax) return;
-      window.MathJax = { tex:{ inlineMath:[['$','$'],['\\(','\\)']] } };
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      document.head.appendChild(s);
-    }
-
+    // Load on page ready
     document.addEventListener('DOMContentLoaded', loadPaper);
   </script>
 </body>
