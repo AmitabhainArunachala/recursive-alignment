@@ -50,7 +50,7 @@
     pre{background:#f5f5f5;padding:20px;border-radius:2px;overflow-x:auto;margin:20px 0;border-left:3px solid var(--gold)}
     code{font-family:'Courier New',monospace;background:#f5f5f5;padding:2px 5px;border-radius:2px}
 
-    /* “Podium” blockquotes / callouts */
+    /* "Podium" blockquotes / callouts */
     blockquote{background:#f7f7f2;border-left:4px solid var(--gold);padding:18px 22px;margin:28px 0;border-radius:4px}
     blockquote p{margin:0 0 10px}
     blockquote strong:first-child{color:var(--ocean)}
@@ -135,13 +135,30 @@
 
   <!-- Download button -->
   <div class="download-section">
-    <a href="#" class="download-btn" onclick="window.print();return false;">Download PDF</a>
+    <a href="#" class="download-btn" onclick="generatePDF(); return false;">Download PDF</a>
   </div>
 
   <!-- Marked.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+  
+  <!-- html2pdf.js for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
+    // PDF generation function
+    function generatePDF() {
+      const el = document.querySelector('.paper-container');
+      const opt = {
+        margin:       [10,12,14,12],          // top, right, bottom, left (mm)
+        filename:     'Recursive_Alignment_L3-L4.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all','css','legacy'] }
+      };
+      html2pdf().set(opt).from(el).save();
+    }
+
     // Try these markdown files in order
     async function fetchFirstAvailable(paths){
       for(const p of paths){
@@ -171,7 +188,7 @@
         document.getElementById('loading').style.display = 'none';
 
         enhanceInternalNav();
-        processReferences();           // add ids ref-1, ref-2, … if “References” is a list
+        processReferences();           // add ids ref-1, ref-2, … if "References" is a list
 
         // Typeset math after insertion (if MathJax loaded)
         if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
