@@ -128,7 +128,7 @@
   </nav>
 
   <!-- Paper content -->
-  <div class="paper-container">
+  <div class="paper-container" id="paper-container">
     <div class="loading" id="loading">Loading paper...</div>
     <div id="paper-content" style="display:none"></div>
   </div>
@@ -145,18 +145,42 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
+    // Global variable to track if paper is loaded
+    let paperLoaded = false;
+
     // PDF generation function
     function generatePDF() {
-      const el = document.querySelector('.paper-container');
+      // Check if paper is loaded
+      if (!paperLoaded) {
+        alert('Please wait for the paper to finish loading before downloading.');
+        return;
+      }
+
+      // Hide the loading message if it's still visible
+      const loadingEl = document.getElementById('loading');
+      if (loadingEl) {
+        loadingEl.style.display = 'none';
+      }
+
+      // Generate PDF from the paper content
+      const el = document.getElementById('paper-container');
       const opt = {
         margin:       [10,12,14,12],          // top, right, bottom, left (mm)
         filename:     'Recursive_Alignment_L3-L4.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['avoid-all','css','legacy'] }
       };
-      html2pdf().set(opt).from(el).save();
+      
+      // Show a message while generating
+      const btn = document.querySelector('.download-btn');
+      const originalText = btn.textContent;
+      btn.textContent = 'Generating PDF...';
+      
+      html2pdf().set(opt).from(el).save().then(() => {
+        btn.textContent = originalText;
+      });
     }
 
     // Try these markdown files in order
@@ -192,6 +216,9 @@
 
         // Typeset math after insertion (if MathJax loaded)
         if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
+
+        // Mark paper as loaded
+        paperLoaded = true;
 
       }catch(err){
         console.error('Error loading paper:', err);
