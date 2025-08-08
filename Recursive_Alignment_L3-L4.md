@@ -5,7 +5,7 @@
 **John Vincent Shrader**  
 _Independent Researcher_  
 Uluwatu, Bali, Indonesia
-August 2, 2025
+Version 1.0 — August 8, 2025
 written in combination with 4 leading LLMs: 
 GPT-4, Claude-3, Gemini Pro, Grok
 
