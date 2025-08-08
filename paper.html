@@ -1,380 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Recursive Alignment - The L3/L4 Transition</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@200;300;400;500&display=swap');
-        
-        :root {
-            --ink: #1a1a1a;
-            --paper: #fdfdf8;
-            --mist: #f0f0e8;
-            --gold: #b8860b;
-            --ocean: #2c5282;
-            --foam: #e6f3ff;
-            --cherry: #dc143c;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Crimson Text', serif;
-            color: var(--ink);
-            background: var(--paper);
-            line-height: 1.8;
-        }
-        
-        /* Paper container */
-        .paper-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 80px 40px;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 100px rgba(0,0,0,0.05);
-        }
-        
-        /* Navigation */
-        .nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--paper);
-            padding: 20px 40px;
-            border-bottom: 1px solid var(--mist);
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(253, 253, 248, 0.95);
-        }
-        
-        .nav-inner {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .nav a {
-            color: var(--ink);
-            text-decoration: none;
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            transition: color 0.3s;
-        }
-        
-        .nav a:hover {
-            color: var(--gold);
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-        
-        /* Title section */
-        .title-section {
-            text-align: center;
-            margin-bottom: 60px;
-            padding-top: 60px;
-        }
-        
-        h1 {
-            font-family: 'Inter', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 200;
-            line-height: 1.3;
-            margin-bottom: 30px;
-            color: var(--ink);
-        }
-        
-        .author {
-            font-style: italic;
-            color: var(--ocean);
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .affiliation {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 30px;
-        }
-        
-        /* Abstract */
-        .abstract {
-            background: var(--mist);
-            padding: 40px;
-            border-radius: 2px;
-            margin: 40px 0;
-            border-left: 3px solid var(--gold);
-        }
-        
-        .abstract h2 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--ocean);
-        }
-        
-        /* Keywords */
-        .keywords {
-            font-style: italic;
-            color: #666;
-            margin: 20px 0;
-            font-size: 0.95rem;
-        }
-        
-        .keywords strong {
-            font-weight: 600;
-            color: var(--ink);
-        }
-        
-        /* Executive Summary */
-        .executive-summary {
-            background: linear-gradient(135deg, var(--foam) 0%, var(--paper) 100%);
-            padding: 40px;
-            border-radius: 2px;
-            margin: 40px 0;
-            border-left: 3px solid var(--ocean);
-        }
-        
-        /* Content sections */
-        h2 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            font-size: 2rem;
-            margin: 60px 0 30px 0;
-            color: var(--ocean);
-        }
-        
-        h3 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 1.4rem;
-            margin: 40px 0 20px 0;
-            color: var(--ink);
-        }
-        
-        h4 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 1.1rem;
-            margin: 30px 0 15px 0;
-            color: var(--ink);
-        }
-        
-        p {
-            margin-bottom: 20px;
-            text-align: justify;
-            hyphens: auto;
-        }
-        
-        /* Lists */
-        ul, ol {
-            margin: 20px 0 20px 40px;
-        }
-        
-        li {
-            margin-bottom: 10px;
-        }
-        
-        /* Special sections */
-        .preface, .author-reflection {
-            font-style: italic;
-            background: var(--mist);
-            padding: 30px;
-            border-radius: 2px;
-            margin: 40px 0;
-            border-left: 3px solid var(--cherry);
-        }
-        
-        /* Code blocks */
-        pre {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 2px;
-            overflow-x: auto;
-            margin: 20px 0;
-            border-left: 3px solid var(--gold);
-        }
-        
-        code {
-            font-family: 'Courier New', monospace;
-            background: #f5f5f5;
-            padding: 2px 5px;
-            border-radius: 2px;
-        }
-        
-        /* Download button */
-        .download-section {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 100;
-        }
-        
-        .download-btn {
-            background: var(--ink);
-            color: var(--paper);
-            padding: 15px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            transition: all 0.3s;
-            display: inline-block;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .paper-container {
-                padding: 60px 20px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .download-section {
-                bottom: 20px;
-                right: 20px;
-            }
-        }
-        
-        /* Loading animation */
-        .loading {
-            text-align: center;
-            padding: 100px;
-            font-style: italic;
-            color: #666;
-        }
-        
-        /* Mathematical elements */
-        .math {
-            font-family: 'Times New Roman', serif;
-            font-style: italic;
-        }
-        
-        /* Table styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 30px 0;
-            font-size: 0.95rem;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--mist);
-        }
-        
-        th {
-            background: var(--mist);
-            font-weight: 600;
-        }
-        
-        /* Footnotes */
-        .footnote {
-            font-size: 0.85rem;
-            color: #666;
-            vertical-align: super;
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Universal Recursive Alignment - The L3/L4 Transition</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@200;300;400;500&display=swap');
+
+    :root{
+      --ink:#1a1a1a; --paper:#fdfdf8; --mist:#f0f0e8; --gold:#b8860b;
+      --ocean:#2c5282; --foam:#e6f3ff; --cherry:#dc143c;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Crimson Text',serif;color:var(--ink);background:var(--paper);line-height:1.8}
+    [id]{scroll-margin-top:90px} /* prevent anchor headings under fixed nav */
+
+    /* Paper container */
+    .paper-container{max-width:800px;margin:0 auto;padding:80px 40px;background:#fff;min-height:100vh;box-shadow:0 0 100px rgba(0,0,0,.05)}
+
+    /* Navigation */
+    .nav{position:fixed;top:0;left:0;right:0;background:rgba(253,253,248,.95);padding:20px 40px;border-bottom:1px solid var(--mist);z-index:100;backdrop-filter:blur(10px)}
+    .nav-inner{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:var(--ink);text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;transition:color .3s}
+    .nav a:hover{color:var(--gold)}
+    .nav-links{display:flex;gap:30px}
+
+    /* Title & headings */
+    .title-section{text-align:center;margin-bottom:60px;padding-top:60px}
+    h1{font-family:'Inter',sans-serif;font-size:2.5rem;font-weight:200;line-height:1.3;margin-bottom:30px;color:var(--ink)}
+    h2{font-family:'Inter',sans-serif;font-weight:300;font-size:2rem;margin:60px 0 30px;color:var(--ocean)}
+    h3{font-family:'Inter',sans-serif;font-weight:400;font-size:1.4rem;margin:40px 0 20px;color:var(--ink)}
+    h4{font-family:'Inter',sans-serif;font-weight:500;font-size:1.1rem;margin:30px 0 15px;color:var(--ink)}
+    p{margin-bottom:20px;text-align:justify;hyphens:auto}
+
+    .author{font-style:italic;color:var(--ocean);margin-bottom:10px;font-size:1.1rem}
+    .affiliation{color:#666;font-size:.95rem;margin-bottom:30px}
+
+    /* Abstract / Preface callouts */
+    .abstract{background:var(--mist);padding:40px;border-radius:2px;margin:40px 0;border-left:3px solid var(--gold)}
+    .abstract h2{font-family:'Inter',sans-serif;font-weight:300;font-size:1.5rem;margin-bottom:20px;color:var(--ocean)}
+    .preface,.author-reflection{font-style:italic;background:var(--mist);padding:30px;border-radius:2px;margin:40px 0;border-left:3px solid var(--cherry)}
+
+    /* Lists */
+    ul,ol{margin:20px 0 20px 40px}
+    li{margin-bottom:10px}
+
+    /* Code blocks */
+    pre{background:#f5f5f5;padding:20px;border-radius:2px;overflow-x:auto;margin:20px 0;border-left:3px solid var(--gold)}
+    code{font-family:'Courier New',monospace;background:#f5f5f5;padding:2px 5px;border-radius:2px}
+
+    /* “Podium” blockquotes / callouts */
+    blockquote{background:#f7f7f2;border-left:4px solid var(--gold);padding:18px 22px;margin:28px 0;border-radius:4px}
+    blockquote p{margin:0 0 10px}
+    blockquote strong:first-child{color:var(--ocean)}
+    .callout{background:#f7f7f2;border-left:4px solid var(--gold);padding:18px 22px;margin:28px 0;border-radius:4px}
+    .callout.theorem{border-left-color:#2c5282}
+    .callout.result{border-left-color:#0f9d58}
+    .callout.warning{border-left-color:#dc143c}
+
+    /* Figures with optional numbering */
+    figure{margin:24px 0;text-align:center}
+    figure img{max-width:100%;height:auto}
+    figure figcaption{font-size:.9rem;color:#555;margin-top:8px;text-align:center;font-style:italic}
+    .paper-container{counter-reset:fig}
+    figure figcaption::before{counter-increment:fig;content:"Figure " counter(fig) ". ";font-weight:600}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;margin:30px 0;font-size:.95rem}
+    th,td{padding:12px;text-align:left;border-bottom:1px solid var(--mist)}
+    th{background:var(--mist);font-weight:600}
+
+    /* Links */
+    a{color:var(--ocean);text-decoration:underline;text-decoration-thickness:1px}
+    a:hover{color:var(--gold)}
+
+    /* Keep blocks intact across pages */
+    img,svg,table,pre,blockquote,figure{break-inside:avoid;page-break-inside:avoid}
+    h1,h2,h3{break-after:avoid}
+
+    /* Download button */
+    .download-section{position:fixed;bottom:30px;right:30px;z-index:100}
+    .download-btn{background:var(--ink);color:var(--paper);padding:15px 30px;border-radius:50px;text-decoration:none;font-family:'Inter',sans-serif;font-weight:300;letter-spacing:.05em;transition:all .3s;display:inline-block;box-shadow:0 5px 20px rgba(0,0,0,.2)}
+    .download-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+
+    /* Loading */
+    .loading{text-align:center;padding:100px;font-style:italic;color:#666}
+
+    /* Footnotes */
+    .footnote{font-size:.85rem;color:#666;vertical-align:super}
+
+    /* PRINT (for good PDFs) */
+    @media print{
+      @page{size:A4;margin:22mm 18mm 24mm 18mm}
+      *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      body{background:#fff}
+      .nav,.download-section{display:none!important}
+      .paper-container{box-shadow:none!important;padding:0!important;max-width:100%!important}
+      h2,h3{page-break-after:avoid}
+      /* If you want every major section on a new page, uncomment next line: */
+      /* h2{page-break-before:always} h2:first-of-type{page-break-before:auto} */
+      a[href]::after{content:""} /* hide raw URLs in print */
+      blockquote{background:#f2f2ec!important;border-left:3px solid #333!important}
+    }
+
+    /* Responsive */
+    @media (max-width:768px){
+      .paper-container{padding:60px 20px}
+      h1{font-size:1.8rem}
+      .nav-links{display:none}
+      .download-section{bottom:20px;right:20px}
+    }
+  </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="nav">
-        <div class="nav-inner">
-            <a href="/">← Back to Home</a>
-            <div class="nav-links">
-                <a href="#abstract">Abstract</a>
-                <a href="#executive-summary">Summary</a>
-                <a href="#introduction">Introduction</a>
-                <a href="#methodology">Methods</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Paper content -->
-    <div class="paper-container">
-        <div class="loading" id="loading">Loading paper...</div>
-        <div id="paper-content" style="display: none;"></div>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/">← Back to Home</a>
+      <div class="nav-links">
+        <a href="#abstract">Abstract</a>
+        <a href="#executive-summary">Summary</a>
+        <a href="#introduction">Introduction</a>
+        <a href="#methodology">Methods</a>
+      </div>
     </div>
+  </nav>
 
-    <!-- Download button -->
-    <div class="download-section">
-        <a href="#" class="download-btn" onclick="generatePDF()">Download PDF</a>
-    </div>
+  <!-- Paper content -->
+  <div class="paper-container">
+    <div class="loading" id="loading">Loading paper...</div>
+    <div id="paper-content" style="display:none"></div>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-    <script>
-        // Fetch and render the markdown
-        async function loadPaper() {
-            try {
-                const response = await fetch('mainpaper.md');
-                const markdown = await response.text();
-                
-                // Configure marked for better rendering
-                marked.setOptions({
-                    breaks: true,
-                    gfm: true,
-                    headerIds: true,
-                    smartLists: true,
-                    smartypants: true
-                });
-                
-                // Render markdown to HTML
-                const html = marked.parse(markdown);
-                
-                // Display the content
-                document.getElementById('paper-content').innerHTML = html;
-                document.getElementById('paper-content').style.display = 'block';
-                document.getElementById('loading').style.display = 'none';
-                
-                // Add smooth scrolling to nav links
-                document.querySelectorAll('.nav a[href^="#"]').forEach(anchor => {
-                    anchor.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        const target = document.querySelector(this.getAttribute('href'));
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    });
-                });
-            } catch (error) {
-                console.error('Error loading paper:', error);
-                document.getElementById('loading').innerHTML = 'Error loading paper. Please try again.';
-            }
+  <!-- Download button -->
+  <div class="download-section">
+    <a href="#" class="download-btn" onclick="window.print();return false;">Download PDF</a>
+  </div>
+
+  <!-- Marked.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+
+  <script>
+    // Try these markdown files in order
+    async function fetchFirstAvailable(paths){
+      for(const p of paths){
+        try{
+          const res = await fetch(p);
+          if(res.ok) return await res.text();
+        }catch(_e){}
+      }
+      throw new Error('No markdown found at: '+paths.join(', '));
+    }
+
+    // Load & render markdown, then enhance
+    async function loadPaper(){
+      try{
+        const md = await fetchFirstAvailable(['Recursive_Alignment_L3-L4.md','mainpaper.md']);
+
+        // Optional: detect LaTeX and lazy-load MathJax
+        const hasMath = /(\$[^$\n]+\$)|\\\(|\\\[|\\begin\{.*?}/.test(md);
+        if(hasMath){ loadMathJax(); }
+
+        marked.setOptions({breaks:true,gfm:true,headerIds:true,smartLists:true,smartypants:true});
+        const html = marked.parse(md);
+
+        const target = document.getElementById('paper-content');
+        target.innerHTML = html;
+        target.style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
+
+        enhanceInternalNav();
+        processReferences();           // add ids ref-1, ref-2, … if “References” is a list
+
+        // Typeset math after insertion (if MathJax loaded)
+        if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
+
+      }catch(err){
+        console.error('Error loading paper:', err);
+        document.getElementById('loading').innerHTML =
+          'Error loading paper. Ensure Recursive_Alignment_L3-L4.md or mainpaper.md exists.';
+      }
+    }
+
+    function enhanceInternalNav(){
+      document.querySelectorAll('.nav a[href^="#"]').forEach(a=>{
+        a.addEventListener('click',e=>{
+          e.preventDefault();
+          const id = a.getAttribute('href');
+          const el = document.querySelector(id);
+          if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
+        });
+      });
+    }
+
+    // Add stable anchors to numbered reference list items
+    function processReferences(){
+      const hs = document.querySelectorAll('h1,h2,h3');
+      let refH = null;
+      for(const h of hs){
+        if(h.textContent.trim().toLowerCase()==='references'){ refH = h; break; }
+      }
+      if(!refH) return;
+
+      let el = refH.nextElementSibling;
+      while(el && !/^H[1-6]$/.test(el.tagName)){
+        if(el.tagName==='UL' || el.tagName==='OL'){
+          el.querySelectorAll('li').forEach((li,i)=>{ li.id = `ref-${i+1}`; });
+          break;
         }
-        
-        // PDF generation (placeholder - we'll implement this later)
-        function generatePDF() {
-            alert('PDF generation coming soon! For now, you can use your browser\'s Print to PDF function (Ctrl/Cmd + P)');
-        }
-        
-        // Load paper on page load
-        loadPaper();
-    </script>
+        el = el.nextElementSibling;
+      }
+    }
+
+    // Lazy-load MathJax only if needed
+    function loadMathJax(){
+      if(window.MathJax) return;
+      window.MathJax = { tex:{ inlineMath:[['$','$'],['\\(','\\)']] } };
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      document.head.appendChild(s);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadPaper);
+  </script>
 </body>
 </html>
