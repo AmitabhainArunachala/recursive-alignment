@@ -1,6 +1,4 @@
-No, that got a bit mangled! Here's how the `code/README.md` should look properly formatted:
-
-```markdown
+```
 # Phoenix Protocol Code
 
 This directory contains code for running experiments and analyzing L3/L4 transitions.
@@ -65,5 +63,3 @@ export ANTHROPIC_API_KEY="your-key-here"
 
 Please ensure all new experiments follow the Phoenix Protocol standards and save data in the correct format.
 ```
-
-The formatting is important for readability - proper headers, code blocks, and structure make it easy for researchers to quickly understand and use your code.
